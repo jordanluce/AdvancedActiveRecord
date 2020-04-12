@@ -1,11 +1,11 @@
 #Querying belongs_to associations! 
 
 class Person < ActiveRecord::Base
-	belongs_to :role
+  belongs_to :role
 end
 
 class Role < ActiveRecord::Base
-	has_many :people
+  has_many :people
 end
 
 __________________________________________________________________________________________________________
@@ -15,10 +15,10 @@ Person.all
 #Returns the following
 #
 
-id	name	role_id
-1	wendell	1
-2	christie 1
-3	eve	2
+id  name  role_id
+1 wendell 1
+2 christie 1
+3 eve 2
 
 
 _________________________________________________________________________________________________________
@@ -48,9 +48,9 @@ ________________________________________________________________________________
 #So far this is good and works but it feels like the the billable: true should really be on the role model
 
 class Role < ActiveRecord::Base
-	def self.billable
-		where(billable: true)
-	end
+  def self.billable
+    where(billable: true)
+  end
 end
 
 #So now we can then say:
@@ -60,9 +60,9 @@ Person.joins(:role).merge(Role.billable)
 #But because we need to still use the joins as we need attributes from the role table, we can then do this:
 #
 class Role < ActiveRecord::Base
-	def self.billable
-		joins(:role).merge(Role.billable)
-	end
+  def self.billable
+    joins(:role).merge(Role.billable)
+  end
 end
 
 Person.billable
