@@ -18,29 +18,29 @@ ________________________________________________________________________________
 
 Role.all
 
-id  name  billable
-1 Developer t
-2 Manager f
-3 Unassigned  f
+id    name    billable
+1   Developer     t
+2   Manager       f
+3   Unassigned    f
 
 ____________________________________________________________________________________________________________________
 
 Location.all
 
-id  name  billable
-1 Boston  1
-2 New York  1
-3 Denver  2
+id    name    billable
+1   Boston      1
+2   New York    1
+3   Denver      2
 
 ____________________________________________________________________________________________________________________
 
 People.all
 
-id  name  role_id location_id
-1 Wendell 1 1
-2 Christie  1 1
-3 Sandy 1 3
-4 Eve 2 2
+id      name    role_id location_id
+1     Wendell     1         1
+2     Christie    1         1
+3     Sandy       1         3
+4     Eve         2         2
 
 ____________________________________________________________________________________________________________________
 
