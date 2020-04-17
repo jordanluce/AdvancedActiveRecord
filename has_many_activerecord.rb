@@ -107,3 +107,73 @@ class location < ActiveRecord::Base
 end 
 
 Location.billable
+
+
+____________________________________________________________________________________________________________________
+
+
+#Now we want to order the billable locations by region name, then by location name.
+#
+
+class Location < ActiveRecord::Base
+  belongs_to :region
+end
+
+class Region < ActiveRecord::Base
+  has_many :locations
+end
+
+#So straigth away we can do the following query to get the billable locations to be ordered by region name then by location name:
+#
+
+Location.joins(:region).merge(Region.order(:name)).order(:name)
+
+#Which gives us the following:
+#
+
+    locations             |    regions
+id    name    region_id   |   id     name
+1    Boston     1         |    1     East
+2    New York   1         |    1     East
+3    Denver     2         |    2     West
+
+
+#So now we can create our method on the model to scope things:
+#
+
+class Location < ActiveRecord::Base
+  def self.billable
+    joins(people: :role).where(roles: { billable: true }).distinct
+  end
+
+  def self.by_region_and_location_name
+    joins(:region).merge(Region.order(:name)).order(:name)
+  end
+end
+
+#Now the problem that we are going to have is we won't be able to join our scopes and do:
+#
+
+XXXXXX Location.billable.by_region_and_location_name XXXXXX
+#This is because the (distinct) method.
+#We need to use a sub-query with the (from) method
+#Let's use it to first return distinct billable locations.
+#
+Location.from(Location.billable, :locations)
+#Which returns this:
+#
+    locations
+id    name    region_id
+3    Denver     2
+1    Boston     1
+
+#So now we can put it all together
+#
+
+Location.from(Location.billable, :locations).by_region_and_location_name
+
+    locations            |   regions
+id    name    region_id  |  id   name
+1    Boston       1      |  1   East
+3    Denver       2      |  2   West
+
