@@ -52,3 +52,48 @@ Person.
 name  count
 Eve     2
 Bill    1
+
+#Notice how this returns people that have employees only, what if we wanted to see everyone even the ones without employees...
+#
+
+Person.
+  joins("LEFT JOIN people employees ON employees.manager_id = people.id").
+  group("people.name").
+  count("employees.id")
+
+name      count
+Christie    0
+Sandy       0
+Wendell     0
+Eve         2
+Bill        1
+
+__________________________________________________________________________________________________________________________________
+
+#Now let's try to get people with lower than average salaries at their location....
+#
+
+Person.
+  joins(
+    "INNER JOIN (" +
+      Person.
+        select("location_id, AVG(salary) as average").
+        group("location_id").
+        to_sql
+    ") salaries " \
+    "ON salaries.location_id - people.location_id"
+ ).
+ where("people.salary < salaries.average")
+
+
+#This is essentially the same thing as Person.group("location_id").average(:salary), but this way we can call to_sql on it (since it is still a relation, rather than the scalar result).
+
+#We now have a virtual table of the average salary at each location, aliased as salaries, which we join on to the people table (using their location_id to match up rows).
+
+#Finally, with the new columns available, we can use a simple where clause to filter our results down.
+ #
+ #
+ #
+                    people                                                salaries
+id    name    role_id     location_id   manager_id  salary      location_id     average
+4   Christie    1               1           1       30000           1         35000.000000000000
